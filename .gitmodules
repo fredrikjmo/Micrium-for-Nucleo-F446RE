@@ -1,3 +1,6 @@
 [submodule "uC-OS3"]
 	path = uC-OS3
 	url = https://github.com/weston-embedded/uC-OS3.git
+[submodule "lib/uC-OS3"]
+	path = lib/uC-OS3
+	url = https://github.com/weston-embedded/uC-OS3.git
