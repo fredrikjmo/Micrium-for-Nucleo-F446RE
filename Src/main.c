@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "../Lib/uC-OS3/os.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,7 +33,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define TASK_PRIORITY 3
+#define STACK_SIZE 128   
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,7 +56,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+static OS_TCB LedTaskTCB;
+static CPU_STK LedTaskStk[STACK_SIZE];
 /* USER CODE END 0 */
 
 /**
@@ -88,7 +90,39 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  OS_ERR os_err;
+  OSInit(&os_err);
+  // Check for error in initialization
+  if (os_err != OS_ERR_NONE) {
+      // Error handling
+  }
 
+  // Create the LED control task
+  OSTaskCreate(&LedTaskTCB,                // Task Control Block
+                "LED Control Task",         // Task name
+                LedTask,                    // Task function
+                NULL,                       // Pointer to the argument
+                TASK_PRIORITY,              // Task priority
+                LedTaskStk,                 // Task stack
+                STACK_SIZE / 10,            // Watermark limit for stack
+                STACK_SIZE,                 // Stack size
+                1,                          // Queue size (for messages)
+                0,                          // Time quanta (0 uses default)
+                NULL,                       // Extension pointer
+                OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR, // Options
+                &os_err);                   // Pointer to error variable
+
+  // Check for error in task creation
+  if (os_err != OS_ERR_NONE) {
+      // Error handling
+  }
+
+  // Start the OS scheduler
+  OSStart(&os_err);
+  // Should never return, check for error
+  if (os_err != OS_ERR_NONE) {
+      // Error handling
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -150,7 +184,21 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void LedTask(void *p_arg) {
+    OS_ERR os_err;
+    while (1) {
+        //HAL_Delay(2000);
+        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        // Delay the task for 500 milliseconds
+        OSTimeDlyHMSM(0, 0, 0, 300, OS_OPT_TIME_HMSM_NON_STRICT, &os_err);
+        
+        // Check for delay error
+        if (os_err != OS_ERR_NONE) {
+                    //HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 
+        }
+    }
+}
 /* USER CODE END 4 */
 
 /**

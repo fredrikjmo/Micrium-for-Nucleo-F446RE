@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "os.h": "c",
+        "os_cfg.h": "c",
+        "lib_def.h": "c",
+        "cpu_def.h": "c",
+        "cpu.h": "c",
+        "lib_cfg.h": "c"
+    }
+}
